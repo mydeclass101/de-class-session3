@@ -1,0 +1,8 @@
+# the big data file comes from GitHub Releases (downloaded on first start)
+data/ecommerce_base.sql.gz
+data/*.part
+
+# your own work (copy lessons here before editing, so git pull never conflicts)
+work/*
+!work/README.md
+.env

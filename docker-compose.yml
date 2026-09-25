@@ -1,0 +1,35 @@
+name: sql-course
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: sql-course-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root123}
+      # the first start downloads this file into ./data/ if it is not there yet
+      DATA_URL: ${DATA_URL:-https://github.com/mydeclass101/de-class-session3/releases/download/data-v1/ecommerce_base.sql.gz}
+      TZ: Asia/Bangkok
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --default-time-zone=+07:00
+      - --innodb-buffer-pool-size=536870912     # 512 MB: enough for the course, light on laptops
+      - --innodb-redo-log-capacity=268435456
+      - --binlog-expire-logs-seconds=86400
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"     # this computer only
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+      - ./data:/data
+      - ./scripts:/scripts:ro
+    healthcheck:
+      test: ["CMD-SHELL", "test ! -f /var/lib/mysql/COURSE_DATA_MISSING && mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15m                          # first start restores the data (a few minutes)
+
+volumes:
+  mysql_data:
