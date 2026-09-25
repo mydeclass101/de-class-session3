@@ -13,8 +13,8 @@ repo นี้มี **MySQL 8.4 พร้อมข้อมูลร้าน�
 ## เริ่มต้น (ครั้งแรก)
 
 ```bash
-git clone <URL ของ repo นี้>
-cd <ชื่อโฟลเดอร์>
+git clone git@github.com:mydeclass101/de-class-session3.git
+cd de-class-session3
 docker compose up -d
 ```
 
