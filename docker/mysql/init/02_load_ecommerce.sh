@@ -11,7 +11,8 @@ load_ecommerce() {
     fi
     if [ -f /data/ecommerce_base.sql.gz.sha256 ]; then
         echo ">>> checking file integrity"
-        (cd /data && sha256sum -c ecommerce_base.sql.gz.sha256) || { rm -f "$DUMP"; return 1; }
+        # strip CR: git on Windows may check the .sha256 file out with CRLF line endings
+        (cd /data && tr -d '\r' < ecommerce_base.sql.gz.sha256 | sha256sum -c -) || { rm -f "$DUMP"; return 1; }
     fi
     echo ">>> restoring ecommerce (takes a few minutes, please wait) ..."
     { echo "SET sql_log_bin = 0;"; zcat "$DUMP"; } | MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -uroot || return 1

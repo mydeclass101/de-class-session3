@@ -1,3 +1,4 @@
 * text=auto
 *.sh text eol=lf
 *.gz binary
+*.sha256 text eol=lf
