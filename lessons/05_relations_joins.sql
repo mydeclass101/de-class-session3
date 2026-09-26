@@ -130,19 +130,25 @@ FROM customers c
 LEFT JOIN orders o ON o.customer_id = c.customer_id
 ORDER BY c.customer_id, o.ordered_at;           -- 👀 ปิยะ (CUS-0000006) ขึ้นมาด้วย แต่ order เป็น NULL
 
+--ลอง inner join หน่อย
+SELECT c.customer_code, c.name, o.order_number, o.status
+FROM customers c
+LEFT JOIN orders o ON o.customer_id = c.customer_id
+ORDER BY c.customer_id, o.ordered_at;
+
+
 -- จำนวน order ต่อลูกค้า (รวมคนที่เป็น 0)
 SELECT c.customer_code, c.name, COUNT(o.order_id) AS n_orders      -- ⚠️ COUNT(o.order_id) ไม่ใช่ COUNT(*)
 FROM customers c
 LEFT JOIN orders o ON o.customer_id = c.customer_id
-GROUP BY c.customer_id, c.customer_code, c.name
+GROUP BY c.customer_code, c.name
 ORDER BY n_orders DESC;
 
--- ⚠️ กับดัก: เงื่อนไขของตารางขวาต้องอยู่ใน ON ไม่ใช่ WHERE
 SELECT c.customer_code, o.order_number
-FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id
-WHERE o.status = 'completed';                   -- WHERE ตัดแถว NULL ทิ้ง → กลายเป็น INNER JOIN
-SELECT c.customer_code, o.order_number
-FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id AND o.status = 'completed';   -- ✅
+FROM customers c 
+LEFT JOIN orders o 
+ON o.customer_id = c.customer_id 
+    AND o.status = 'completed'; 
 
 -- ---------------------------------------------------------------------
 -- 5.5 Anti-join: "สิ่งที่ไม่มีคู่" (DE ใช้หา orphan / ข้อมูลที่ยังไม่ถูกโหลด)
