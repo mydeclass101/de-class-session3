@@ -117,16 +117,7 @@ FROM sales
 GROUP BY branch;
 
 -- ---------------------------------------------------------------------
--- 4.5 Subtotal ด้วย WITH ROLLUP
--- ---------------------------------------------------------------------
-SELECT COALESCE(branch, '== รวมทุกสาขา ==') AS branch,
-       COALESCE(category, '(รวมสาขา)')      AS category,
-       SUM(qty * unit_price)                AS revenue
-FROM sales
-GROUP BY branch, category WITH ROLLUP;
-
--- ---------------------------------------------------------------------
--- 4.6 💡 DE use case: สร้าง "ตารางสรุป" จากผล aggregate (preview บทที่ 8)
+-- 4.5 💡 DE use case: สร้าง "ตารางสรุป" จากผล aggregate (preview บทที่ 8)
 -- ---------------------------------------------------------------------
 DROP TABLE IF EXISTS daily_branch_sales;
 CREATE TABLE daily_branch_sales (

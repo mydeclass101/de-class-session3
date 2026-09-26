@@ -38,11 +38,12 @@ INSERT INTO members (member_code, name, joined_date) VALUES ('MEM-0006', 'ปิ
 
 SELECT * FROM members;
 
--- ❌ INSERT INTO members (member_code, name, joined_date) VALUES ('MEM-0001', 'คนใหม่', '2026-03-06');   -- ซ้ำ → error ทั้งคำสั่ง
-
 -- ---------------------------------------------------------------------
 -- 2.2 UPDATE: ⚠️ ต้องมี WHERE เสมอ ไม่งั้นแก้ "ทุกแถว"
 -- ---------------------------------------------------------------------
+UPDATE members
+SET points = points + 50            -- คำนวณจากค่าเดิมได้
+
 -- 💡 เทคนิค: เขียน SELECT ด้วย WHERE เดียวกันก่อน ดูว่าโดนกี่แถว แล้วค่อยเปลี่ยนเป็น UPDATE
 SELECT * FROM members WHERE member_code = 'MEM-0003';
 
@@ -75,9 +76,17 @@ SELECT COUNT(*) AS remaining FROM members;
 -- 💡 Hard delete vs Soft delete
 --    hard delete = ลบแถวจริง → pipeline ที่ดึงตาม updated_at "มองไม่เห็น" ว่าแถวหายไป
 --    soft delete = ใส่ is_deleted = 1 / deleted_at แทน → ระบบปลายทางรู้ว่าถูกลบ
-ALTER TABLE members ADD COLUMN deleted_at DATETIME NULL;
+ALTER TABLE members ADD COLUMN deleted_at DATETIME;
 UPDATE members SET deleted_at = NOW() WHERE member_code = 'MEM-0005';
 SELECT member_code, name, deleted_at FROM members WHERE deleted_at IS NULL;   -- สมาชิกที่ยัง active
+
+ALTER TABLE members ADD COLUMN is_active BOOLEAN;
+
+update members 
+set is_active = 1
+where deleted_at is null;
+
+SELECT * FROM members WHERE is_active = true;
 
 -- ---------------------------------------------------------------------
 -- 2.4 TRANSACTION: ทำหลายคำสั่งแบบ "สำเร็จทั้งหมด หรือไม่เกิดอะไรเลย"
@@ -105,6 +114,8 @@ SELECT member_code, points FROM members; -- แต้มกลับมาเห
 CREATE TABLE members_copy LIKE members;
 INSERT INTO members_copy SELECT * FROM members;           -- copy ข้อมูลจากอีกตาราง (INSERT ... SELECT)
 SELECT COUNT(*) FROM members_copy;
+
+CREATE TABLE members_bk AS SELECT * FROM members;
 
 DELETE FROM members_copy WHERE member_id > 0;             -- ลบทีละแถว, ROLLBACK ได้, ช้าในตารางใหญ่
 INSERT INTO members_copy (member_code, name, joined_date) VALUES ('MEM-9999', 'ทดสอบ', '2026-04-01');

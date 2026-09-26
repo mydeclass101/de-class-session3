@@ -127,10 +127,6 @@ FROM menu;
 
 SELECT CURRENT_DATE AS today, NOW() AS now_, CAST('2026-03-15 13:45:00' AS DATE) AS only_date;
 
--- แปลงชนิดข้อมูล
-SELECT CAST('123' AS UNSIGNED) + 1 AS n, CAST(price AS CHAR) AS price_text, STR_TO_DATE('15/03/2026', '%d/%m/%Y') AS parsed
-FROM menu LIMIT 1;
-
 -- ---------------------------------------------------------------------
 -- 3.6 CASE WHEN: สร้างคอลัมน์ตามเงื่อนไข (ใช้บ่อยมากตอนทำ business rule)
 -- ---------------------------------------------------------------------
@@ -145,6 +141,39 @@ SELECT name,
             ELSE 'ok' END                                       AS stock_status
 FROM menu
 ORDER BY price DESC;
+
+
+-- อาจได้ผลที่แตกต่างกัน
+
+SELECT name,
+       price,
+       CASE WHEN price >= 90 THEN 'premium'
+            WHEN price >= 60 THEN 'regular'
+            WHEN price >= 30 THEN 'eco'
+            ELSE 'value' END                                    AS price_tier,
+FROM menu
+ORDER BY price DESC;
+
+SELECT name,
+       price,
+       CASE WHEN price >= 30 THEN 'eco'
+            WHEN price >= 60 THEN 'regular'
+            WHEN price >= 90 THEN 'premium'
+            ELSE 'value' END                                    AS price_tier,
+FROM menu
+ORDER BY price DESC;
+
+-- หรืออาจจะใช้ between
+
+SELECT name,
+       price,
+       CASE WHEN price BETWEEN 30 AND 59 THEN 'eco'
+            WHEN price BETWEEN 60 AND 89 THEN 'regular'
+            WHEN price >= 90 THEN 'premium'
+            ELSE 'value' END                                    AS price_tier,
+FROM menu
+ORDER BY price DESC;
+
 
 -- สรุปบทที่ 3
 --   SELECT/alias/คำนวณ · WHERE (IN, BETWEEN, LIKE, วงเล็บ AND/OR) · NULL ต้องใช้ IS NULL / COALESCE

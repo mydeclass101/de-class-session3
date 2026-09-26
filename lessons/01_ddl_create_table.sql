@@ -22,11 +22,13 @@ DESCRIBE members;
 SHOW CREATE TABLE members;             -- DDL เต็มที่ MySQL เก็บไว้จริง
 
 -- ลองใส่ข้อมูล 1 แถวเพื่อดูว่าตารางใช้งานได้ (รายละเอียด INSERT อยู่บทที่ 2)
+SELECT * FROM members;
+
 INSERT INTO members VALUES (1, 'สมชาย', 'กรุงเทพมหานคร', '2026-01-15', 120);
 SELECT * FROM members;
 
 -- ⚠️ ตารางนี้ยังมีปัญหา: ไม่มีอะไรกันข้อมูลแย่ ๆ เลย
-INSERT INTO members VALUES (1, NULL, NULL, NULL, -50);    -- id ซ้ำ, ไม่มีชื่อ, แต้มติดลบ ... ใส่ได้หมด!
+INSERT INTO members VALUES (1, NULL, '', NULL, -50);    -- id ซ้ำ, ไม่มีชื่อ, แต้มติดลบ ... ใส่ได้หมด!
 SELECT * FROM members;
 
 -- ---------------------------------------------------------------------
@@ -70,6 +72,7 @@ CREATE TABLE members (
 --    ตารางจริงใน ecommerce มีสองคอลัมน์นี้ทุกตารางที่ข้อมูลเปลี่ยนได้
 
 INSERT INTO members (member_code, name, joined_date) VALUES ('MEM-0001', 'สมชาย ใจดี', '2026-01-15');
+INSERT INTO members (member_code, name, joined_date) VALUES ('MEM-0002', 'สมชาย ใจร้าย', '2026-01-16');
 SELECT * FROM members;                 -- member_id, province, tier, points, created_at ถูกเติมให้อัตโนมัติ
 
 -- ลองใส่ข้อมูลเสีย: ทุกบรรทัดจะ error (ลบ -- ออกทีละบรรทัดแล้วรัน)
@@ -96,11 +99,9 @@ DESCRIBE members;
 -- 1.5 RENAME / DROP
 -- ---------------------------------------------------------------------
 CREATE TABLE members_backup LIKE members;          -- copy "โครงสร้าง" อย่างเดียว (ไม่มีข้อมูล)
-SHOW TABLES;
 RENAME TABLE members_backup TO members_old;
 DROP TABLE members_old;                            -- ลบทั้งตาราง (โครงสร้าง + ข้อมูล) กู้คืนไม่ได้!
 DROP TABLE IF EXISTS table_that_does_not_exist;    -- IF EXISTS = ไม่ error ถ้าไม่มี
-SHOW TABLES;
 
 -- ---------------------------------------------------------------------
 -- 1.6 ดู metadata ของตาราง (DE ใช้บ่อยมากตอนสำรวจ source ใหม่)
